@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Falha:"+response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(getApplicationContext(), "sucesso", Toast.LENGTH_LONG).show();
                 empresas = response.body();
                 arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, empresas.getEmpresaList());
                 listViewEmpresa.setAdapter(arrayAdapter);

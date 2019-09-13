@@ -18,16 +18,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
 
-    private EditText nome;
-    private EditText segmento;
-    private EditText cep;
-    private EditText estado;
-    private EditText endereco;
+    private EditText nomeEditText;
+    private EditText cepEditText;
+    private EditText estadoEditText;
+    private EditText enderecoEditText;
 
     private Button cadastrarButton;
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
+
+    private RadioGroup radioGroupSegmento;
+    private RadioButton radioButtonEscolhido;
+
+    private String segmentoValue;
+    private Integer segmentoCheckedId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,34 +45,54 @@ public class CadastrarActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
-        nome = findViewById(R.id.editTextNomeEmpresa);
-        segmento = findViewById(R.id.editTextSegmentoEmpresaId);
-        cep = findViewById(R.id.editTextCepId);
-        estado = findViewById(R.id.editTextEstadoId);
-        endereco = findViewById(R.id.editTextEnderecoId);
+
+        nomeEditText = findViewById(R.id.editTextNomeEmpresa);
+        cepEditText = findViewById(R.id.editTextCepId);
+        estadoEditText = findViewById(R.id.editTextEstadoId);
+        enderecoEditText = findViewById(R.id.editTextEnderecoId);
+
+        radioGroupSegmento = findViewById(R.id.radioGroupSegmento);
+        //Controlando comportamento do RadioGroup
+        definirValorInicialDoSegemento();
+
+        radioGroupSegmento.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int position) {
+                radioButtonEscolhido = findViewById(radioGroup.getCheckedRadioButtonId());
+                segmentoValue = radioButtonEscolhido.getText().toString();
+            }
+        });
+
+
         cadastrarButton = findViewById(R.id.buttonAdicionarEmpresaId);
-
         cadastrarEmpresa();
+    }
 
+    private void definirValorInicialDoSegemento() {
+        segmentoCheckedId = radioGroupSegmento.getCheckedRadioButtonId();
+        if (segmentoCheckedId == R.id.radioButtonCarga) {
+            segmentoValue = getResources().getString(R.string.carga);
+        } else if (segmentoCheckedId == R.id.radioButtonRodoviario) {
+            segmentoValue = getResources().getString(R.string.rodoviario);
+        }
     }
 
     private void cadastrarEmpresa() {
         cadastrarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nomeEmpresa = nome.getText().toString();
-                String segmentoEmpresa = segmento.getText().toString();
-                String cepEmpresa = cep.getText().toString();
-                String estadoEmpresa = estado.getText().toString();
-                String enderecoEmpresa = endereco.getText().toString();
+                String nomeEmpresa = nomeEditText.getText().toString();
+                String cepEmpresa = cepEditText.getText().toString();
+                String estadoEmpresa = estadoEditText.getText().toString();
+                String enderecoEmpresa = enderecoEditText.getText().toString();
 
-                if (nomeEmpresa.isEmpty() || segmentoEmpresa.isEmpty() || cepEmpresa.isEmpty() || estadoEmpresa.isEmpty() || enderecoEmpresa.isEmpty()) {
+                if (nomeEmpresa.isEmpty() || segmentoValue.isEmpty() || cepEmpresa.isEmpty() || estadoEmpresa.isEmpty() || enderecoEmpresa.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Campo em branco", Toast.LENGTH_LONG).show();
                     return;
                 }
                 Empresa empresa = new Empresa(
                         nomeEmpresa,
-                        segmentoEmpresa,
+                        segmentoValue,
                         cepEmpresa,
                         estadoEmpresa,
                         enderecoEmpresa
