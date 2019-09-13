@@ -4,11 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.sql.Array;
+import java.util.Arrays;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,11 +28,10 @@ public class CadastrarActivity extends AppCompatActivity {
 
     private EditText nomeEditText;
     private EditText cepEditText;
-    private EditText estadoEditText;
     private EditText enderecoEditText;
+    private Spinner spinnerEstado;
 
     private Button cadastrarButton;
-
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
 
@@ -32,6 +39,8 @@ public class CadastrarActivity extends AppCompatActivity {
     private RadioButton radioButtonEscolhido;
 
     private String segmentoValue;
+    private String estadoValue;
+    List<String> listaDeSiglas;
     private Integer segmentoCheckedId;
 
     @Override
@@ -48,13 +57,21 @@ public class CadastrarActivity extends AppCompatActivity {
 
         nomeEditText = findViewById(R.id.editTextNomeEmpresa);
         cepEditText = findViewById(R.id.editTextCepId);
-        estadoEditText = findViewById(R.id.editTextEstadoId);
         enderecoEditText = findViewById(R.id.editTextEnderecoId);
+        spinnerEstado = findViewById(R.id.spinnerStadoId);
 
         radioGroupSegmento = findViewById(R.id.radioGroupSegmento);
+
+        criarRadioGroupSegmento();
+        criarSpinnerDeEstado(this);
+
+        cadastrarButton = findViewById(R.id.buttonAdicionarEmpresaId);
+        cadastrarEmpresa();
+    }
+
+    private void criarRadioGroupSegmento() {
         //Controlando comportamento do RadioGroup
         definirValorInicialDoSegemento();
-
         radioGroupSegmento.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int position) {
@@ -62,10 +79,25 @@ public class CadastrarActivity extends AppCompatActivity {
                 segmentoValue = radioButtonEscolhido.getText().toString();
             }
         });
+    }
 
+    private void criarSpinnerDeEstado(CadastrarActivity cadastrarActivity) {
+        //Definindo o comportamento do Autocomplete de estados
+        ArrayAdapter<CharSequence> adapterEstado = ArrayAdapter.createFromResource(cadastrarActivity, R.array.listaDeEstados, R.layout.support_simple_spinner_dropdown_item);
+        adapterEstado.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerEstado.setAdapter(adapterEstado);
+        listaDeSiglas = Arrays.asList(getResources().getStringArray(R.array.listaDeSiglas));
+        spinnerEstado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                estadoValue = listaDeSiglas.get(position);
+            }
 
-        cadastrarButton = findViewById(R.id.buttonAdicionarEmpresaId);
-        cadastrarEmpresa();
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                estadoValue = listaDeSiglas.get(0);
+            }
+        });
     }
 
     private void definirValorInicialDoSegemento() {
@@ -83,10 +115,9 @@ public class CadastrarActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String nomeEmpresa = nomeEditText.getText().toString();
                 String cepEmpresa = cepEditText.getText().toString();
-                String estadoEmpresa = estadoEditText.getText().toString();
                 String enderecoEmpresa = enderecoEditText.getText().toString();
 
-                if (nomeEmpresa.isEmpty() || segmentoValue.isEmpty() || cepEmpresa.isEmpty() || estadoEmpresa.isEmpty() || enderecoEmpresa.isEmpty()) {
+                if (nomeEmpresa.isEmpty() || segmentoValue.isEmpty() || cepEmpresa.isEmpty() || enderecoEmpresa.isEmpty() || estadoValue.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Campo em branco", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -94,7 +125,7 @@ public class CadastrarActivity extends AppCompatActivity {
                         nomeEmpresa,
                         segmentoValue,
                         cepEmpresa,
-                        estadoEmpresa,
+                        estadoValue,
                         enderecoEmpresa
                 );
                 Call<Empresa> call = retrofitConfig.cadastrarEmpresa(empresa);
