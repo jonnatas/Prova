@@ -14,6 +14,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import java.sql.Array;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
 
-    private EditText nomeEditText;
+    private TextInputEditText nomeTextInput;
     private EditText cepEditText;
     private EditText enderecoEditText;
     private Spinner spinnerEstado;
@@ -55,7 +57,7 @@ public class CadastrarActivity extends AppCompatActivity {
                 .build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
-        nomeEditText = findViewById(R.id.editTextNomeEmpresa);
+        nomeTextInput = findViewById(R.id.textInputNameId);
         cepEditText = findViewById(R.id.editTextCepId);
         enderecoEditText = findViewById(R.id.editTextEnderecoId);
         spinnerEstado = findViewById(R.id.spinnerStadoId);
@@ -113,7 +115,7 @@ public class CadastrarActivity extends AppCompatActivity {
         cadastrarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nomeEmpresa = nomeEditText.getText().toString();
+                String nomeEmpresa = nomeTextInput.getText().toString();
                 String cepEmpresa = cepEditText.getText().toString();
                 String enderecoEmpresa = enderecoEditText.getText().toString();
 

@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:id="@+id/buttonCadastrarEmpresaId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
