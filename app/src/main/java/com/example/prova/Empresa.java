@@ -5,17 +5,17 @@ import androidx.annotation.NonNull;
 public class Empresa {
     private int idEmpresa;
     private String nome;
-    private String Segmento;
-    private String CEP;
-    private String Estado;
-    private String Endereco;
+    private String segmento;
+    private String cep;
+    private String estado;
+    private String endereco;
 
-    public Empresa(String nome, String segmento, String CEP, String estado, String endereco) {
+    public Empresa(String nome, String segmento, String cep, String estado, String endereco) {
         this.nome = nome;
-        Segmento = segmento;
-        this.CEP = CEP;
-        Estado = estado;
-        Endereco = endereco;
+        this.segmento = segmento;
+        this.cep = cep;
+        this.estado = estado;
+        this.endereco = endereco;
     }
 
     public int getIdEmpresa() {
@@ -35,40 +35,34 @@ public class Empresa {
     }
 
     public String getSegmento() {
-        return Segmento;
+        return segmento;
     }
 
     public void setSegmento(String segmento) {
-        Segmento = segmento;
+        this.segmento = segmento;
     }
 
-    public String getCEP() {
-        return CEP;
+    public String getCep() {
+        return cep;
     }
 
-    public void setCEP(String CEP) {
-        this.CEP = CEP;
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getEstado() {
-        return Estado;
+        return estado;
     }
 
     public void setEstado(String estado) {
-        Estado = estado;
+        this.estado = estado;
     }
 
     public String getEndereco() {
-        return Endereco;
+        return endereco;
     }
 
     public void setEndereco(String endereco) {
-        Endereco = endereco;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return getNome();
+        this.endereco = endereco;
     }
 }

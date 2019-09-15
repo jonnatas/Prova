@@ -1,17 +1,14 @@
 package com.example.prova;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,11 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
-    private ListView listViewEmpresa;
+
     private ListEmpresa empresas;
     private Button buttonCadastrarEmpresa;
-    private ArrayAdapter<Empresa> arrayAdapter;
 
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter empresaAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
 
     @Override
@@ -42,29 +41,13 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
-        listViewEmpresa = findViewById(R.id.listViewEmpresasId);
         buttonCadastrarEmpresa = findViewById(R.id.buttonCadastrarEmpresaId);
+        recyclerView = findViewById(R.id.recyclerViewEmpresasId);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
         carregarEmpresas();
         cadastrarEmpresa();
-        irParaEmpresa();
-    }
-
-    private void irParaEmpresa() {
-        listViewEmpresa.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Empresa empresa = empresas.getEmpresaList().get(position);
-                Intent intent = new Intent(getApplicationContext(), CarroActivity.class);
-                intent.putExtra("idEmpresa", empresa.getIdEmpresa());
-                intent.putExtra("nome", empresa.getNome());
-                intent.putExtra("segmento", empresa.getSegmento());
-                intent.putExtra("CEP", empresa.getCEP());
-                intent.putExtra("estado", empresa.getEstado());
-                intent.putExtra("endereco", empresa.getEndereco());
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -88,14 +71,13 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<ListEmpresa>() {
             @Override
             public void onResponse(Call<ListEmpresa> call, Response<ListEmpresa> response) {
-                if(!response.isSuccessful()){
-                    Toast.makeText(getApplicationContext(), "Falha:"+response.code(), Toast.LENGTH_LONG).show();
+                if (!response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
                 empresas = response.body();
-                arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, empresas.getEmpresaList());
-                listViewEmpresa.setAdapter(arrayAdapter);
-
+                empresaAdapter = new EmpresaAdapter(empresas);
+                recyclerView.setAdapter(empresaAdapter);
             }
 
             @Override

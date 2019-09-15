@@ -1,0 +1,38 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp"
+    android:clickable="true"
+    app:cardBackgroundColor="?attr/colorPrimaryDark"
+    app:cardCornerRadius="4dp"
+    card_view:cardElevation="2dp"
+    card_view:rippleColor="#cfd8dc">
+
+    <LinearLayout
+        android:foreground="?android:attr/selectableItemBackground"
+        android:background="@color/fundoBranco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/textViewNomeCardId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <TextView
+            android:id="@+id/textViewSegmentoCardId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:textAppearance="?attr/textAppearanceBody2" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -2,6 +2,8 @@
     <string name="app_name">Prova</string>
     <string name="carga">Setor de Carga</string>
     <string name="rodoviario">Setor Rodoviário</string>
+    <string name="shr_button_next">Salvar</string>
+    <string name="shr_button_cancel">Cancelar</string>
     <string-array name="listaDeSiglas">
         <item>AC</item>
         <item>AL</item>

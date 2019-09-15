@@ -56,7 +56,7 @@ public class CarroActivity extends AppCompatActivity {
     }
 
     private void carregarCarros() {
-        Call<ListCarro> listCarroCall = retrofitConfig.carregarCarros(extras.getInt("idEmpresa"));
+        Call<ListCarro> listCarroCall = retrofitConfig.listarVeiculos(extras.getInt("idEmpresa"));
         listCarroCall.enqueue(new Callback<ListCarro>() {
             @Override
             public void onResponse(Call<ListCarro> call, Response<ListCarro> response) {
