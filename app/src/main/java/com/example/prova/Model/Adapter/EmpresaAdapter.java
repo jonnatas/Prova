@@ -1,22 +1,29 @@
-package com.example.prova;
+package com.example.prova.Model.Adapter;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.prova.Activity.CarroActivity;
+import com.example.prova.Model.Empresa;
+import com.example.prova.Model.ListEmpresa;
+import com.example.prova.R;
+
+import java.util.Collections;
 import java.util.List;
 
 public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaViewHolder> {
     private List<Empresa> empresaList;
 
     public EmpresaAdapter(ListEmpresa empresaList) {
-        this.empresaList = empresaList.getEmpresaList();
+        List<Empresa> list = empresaList.getEmpresaList();
+        Collections.reverse(list);
+        this.empresaList = list;
     }
 
     @NonNull

@@ -10,6 +10,8 @@
     <string name="empresa_estado">Estado</string>
     <string name="empresa_segmento">Segmento</string>
     <string name="cepError">CEP error</string>
+    <string name="carro_placa">Placa</string>
+    <string name="carro_num_eixos">Número de Eixos</string>
     <string-array name="listaDeSiglas">
         <item>AC</item>
         <item>AL</item>

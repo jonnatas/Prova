@@ -1,5 +1,6 @@
-package com.example.prova;
+package com.example.prova.Model;
 
+import com.example.prova.Model.Carro;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

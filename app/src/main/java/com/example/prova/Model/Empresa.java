@@ -1,4 +1,4 @@
-package com.example.prova;
+package com.example.prova.Model;
 
 import androidx.annotation.NonNull;
 

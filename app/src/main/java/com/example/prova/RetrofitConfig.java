@@ -1,6 +1,9 @@
 package com.example.prova;
 
-import java.util.List;
+import com.example.prova.Model.Carro;
+import com.example.prova.Model.Empresa;
+import com.example.prova.Model.ListCarro;
+import com.example.prova.Model.ListEmpresa;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

@@ -1,25 +1,25 @@
-package com.example.prova;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.prova.Activity;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.prova.MaskWatcher;
+import com.example.prova.Model.Empresa;
+import com.example.prova.R;
+import com.example.prova.RetrofitConfig;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.sql.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,6 +63,9 @@ public class CadastrarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cadastrar);
 
         configurarRetrofit();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         textInputLayoutNomeEmpresa = findViewById(R.id.textInputLayoutNameId);
         textInputLayoutEstado = findViewById(R.id.textInputLayoutEstadoId);

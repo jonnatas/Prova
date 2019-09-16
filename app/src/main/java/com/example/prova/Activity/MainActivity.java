@@ -1,18 +1,19 @@
-package com.example.prova;
+package com.example.prova.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.prova.Model.Adapter.EmpresaAdapter;
+import com.example.prova.Model.ListEmpresa;
+import com.example.prova.R;
+import com.example.prova.RetrofitConfig;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private RetrofitConfig retrofitConfig;
 
     private ListEmpresa empresas;
-    private Button buttonCadastrarEmpresa;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter empresaAdapter;
@@ -45,20 +45,18 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
-        buttonCadastrarEmpresa = findViewById(R.id.buttonCadastrarEmpresaId);
         recyclerView = findViewById(R.id.recyclerViewEmpresasId);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         carregarEmpresas();
-        cadastrarEmpresa();
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), CadastrarActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -67,16 +65,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         carregarEmpresas();
-    }
-
-    private void cadastrarEmpresa() {
-        buttonCadastrarEmpresa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CadastrarActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void carregarEmpresas() {
