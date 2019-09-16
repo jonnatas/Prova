@@ -16,6 +16,8 @@
     <string name="delete">deletar</string>
     <string name="search">pesquisar</string>
     <string name="empresas">Empresas</string>
+    <string name="snack_bar_text">Excluido</string>
+    <string name="snack_bar_undo">Desfazer</string>
     <string-array name="listaDeSiglas">
         <item>AC</item>
         <item>AL</item>

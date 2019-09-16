@@ -108,6 +108,10 @@ public class CarroActivity extends AppCompatActivity {
                 call.enqueue(new Callback<Empresa>() {
                     @Override
                     public void onResponse(Call<Empresa> call, Response<Empresa> response) {
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Falha ao deletar:" + response.code(), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         finish();
                     }
 

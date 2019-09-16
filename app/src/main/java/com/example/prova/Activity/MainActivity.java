@@ -2,6 +2,7 @@ package com.example.prova.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,9 +12,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.prova.Model.Adapter.EmpresaAdapter;
+import com.example.prova.Model.Empresa;
 import com.example.prova.Model.ListEmpresa;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
+import com.example.prova.SwipeToDeleteCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import retrofit2.Call;
@@ -29,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ListEmpresa empresas;
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter empresaAdapter;
+    private RecyclerView recyclerViewEmpresas;
+    private EmpresaAdapter empresaAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private FloatingActionButton fab;
     private Toolbar myToolbar;
@@ -47,11 +50,9 @@ public class MainActivity extends AppCompatActivity {
         retrofit = new Retrofit.Builder().baseUrl("https://prova.cnt.org.br/XD01/").addConverterFactory(GsonConverterFactory.create()).build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
-        recyclerView = findViewById(R.id.recyclerViewEmpresasId);
+        recyclerViewEmpresas = findViewById(R.id.recyclerViewEmpresasId);
         layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        carregarEmpresas();
+        recyclerViewEmpresas.setLayoutManager(layoutManager);
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -61,12 +62,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        carregarEmpresas();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        carregarEmpresas();
+//        carregarEmpresas();
     }
 
     private void carregarEmpresas() {
@@ -78,9 +80,13 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 empresas = response.body();
                 empresaAdapter = new EmpresaAdapter(empresas);
-                recyclerView.setAdapter(empresaAdapter);
+                recyclerViewEmpresas.setAdapter(empresaAdapter);
+                empresaAdapter.setContext(getApplicationContext());
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((EmpresaAdapter) empresaAdapter));
+                itemTouchHelper.attachToRecyclerView(recyclerViewEmpresas);
             }
 
             @Override
