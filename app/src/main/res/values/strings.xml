@@ -4,6 +4,12 @@
     <string name="rodoviario">Setor Rodoviário</string>
     <string name="shr_button_next">Salvar</string>
     <string name="shr_button_cancel">Cancelar</string>
+    <string name="empresa_nome">Nome</string>
+    <string name="empresa_cep">CEP</string>
+    <string name="empresa_endereco">Endereço</string>
+    <string name="empresa_estado">Estado</string>
+    <string name="empresa_segmento">Segmento</string>
+    <string name="cepError">CEP error</string>
     <string-array name="listaDeSiglas">
         <item>AC</item>
         <item>AL</item>
