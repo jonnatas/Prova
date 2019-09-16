@@ -15,6 +15,7 @@
     <string name="add">adicionar</string>
     <string name="delete">deletar</string>
     <string name="search">pesquisar</string>
+    <string name="empresas">Empresas</string>
     <string-array name="listaDeSiglas">
         <item>AC</item>
         <item>AL</item>

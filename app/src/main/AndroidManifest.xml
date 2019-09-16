@@ -15,7 +15,9 @@
         <activity
             android:name=".Activity.CadastrarActivity"
             android:parentActivityName=".Activity.MainActivity" />
-        <activity android:name=".Activity.MainActivity">
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

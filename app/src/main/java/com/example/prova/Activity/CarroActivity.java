@@ -50,7 +50,6 @@ public class CarroActivity extends AppCompatActivity {
     private Button buttonCancelarCarro;
 
     private Bundle extras;
-    private int idEmpresa;
 
     private MaterialAlertDialogBuilder materialAlertDialogBuilder;
 
@@ -64,15 +63,20 @@ public class CarroActivity extends AppCompatActivity {
 
         //Carregando informações
         extras = getIntent().getExtras();
-        idEmpresa = extras.getInt("idEmpresa");
+
 
         //Instanciando o retrofit para a comunicação com a API
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://prova.cnt.org.br/XD01/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        retrofit = new Retrofit.Builder().baseUrl("https://prova.cnt.org.br/XD01/").addConverterFactory(GsonConverterFactory.create()).build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
+        instanciandoWidgets(this);
+        confirmarExclusao(this);
+        cadastrarCarro();
+        carregarCarros();
+
+    }
+
+    private void instanciandoWidgets(CarroActivity carroActivity) {
         recyclerView = findViewById(R.id.recyclerViewCarroId);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -85,11 +89,6 @@ public class CarroActivity extends AppCompatActivity {
 
         textInputPlaca = findViewById(R.id.textInputPlacaId);
         textInputNumEixos = findViewById(R.id.textInputNumEixosId);
-
-        confirmarExclusao(this);
-        cadastrarCarro();
-        carregarCarros();
-
     }
 
     private void confirmarExclusao(CarroActivity carroActivity) {
@@ -104,7 +103,7 @@ public class CarroActivity extends AppCompatActivity {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Empresa empresa = new Empresa(idEmpresa);
+                Empresa empresa = new Empresa(extras.getInt("idEmpresa"));
                 Call<Empresa> call = retrofitConfig.deleteEmpresa(empresa);
                 call.enqueue(new Callback<Empresa>() {
                     @Override
@@ -146,6 +145,7 @@ public class CarroActivity extends AppCompatActivity {
     }
 
     private void carregarCarros() {
+        int idEmpresa = extras.getInt("idEmpresa");
         Call<ListCarro> listCarroCall = retrofitConfig.listarVeiculos(idEmpresa);
         listCarroCall.enqueue(new Callback<ListCarro>() {
             @Override
@@ -183,7 +183,7 @@ public class CarroActivity extends AppCompatActivity {
                 boolean placaIsValido = validarCampo(textInputLayoutPlaca, placa, "Placa");
 
                 if (numEixosIsValido && placaIsValido) {
-                    Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), idEmpresa);
+                    Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), extras.getInt("idEmpresa"));
                     Call<Carro> carroCall = retrofitConfig.cadastrarCarro(carro);
                     carroCall.enqueue(new Callback<Carro>() {
                         @Override

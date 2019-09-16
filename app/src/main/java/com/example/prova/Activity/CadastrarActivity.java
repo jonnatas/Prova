@@ -31,9 +31,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
 
-    private boolean isRunning = false;
-    private boolean isDeleting = false;
-
     private TextInputEditText textInputNome;
 
     private TextInputLayout textInputLayoutNomeEmpresa;
@@ -41,7 +38,6 @@ public class CadastrarActivity extends AppCompatActivity {
     private TextInputLayout textInputLayoutCep;
     private TextInputLayout textInputLayoutEndereco;
 
-    private TextWatcher tvCEP;
     private TextInputEditText textInputCEP;
     private TextInputEditText textInputEndereco;
     private AutoCompleteTextView filledExposedDropdownEstado;
@@ -67,6 +63,15 @@ public class CadastrarActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        instanciandoWidgets(this);
+
+        criarRadioGroupSegmento();
+        cadastrarEmpresa();
+        selecionarEstado(this);
+
+    }
+
+    private void instanciandoWidgets(CadastrarActivity cadastrarActivity) {
         textInputLayoutNomeEmpresa = findViewById(R.id.textInputLayoutNameId);
         textInputLayoutEstado = findViewById(R.id.textInputLayoutEstadoId);
         textInputLayoutEndereco = findViewById(R.id.textInputLayoutEnderecoId);
@@ -84,11 +89,6 @@ public class CadastrarActivity extends AppCompatActivity {
 
         buttonCadastrar = findViewById(R.id.buttonAdicionarEmpresaId);
         buttonCancelar = findViewById(R.id.buttonCancelarAdicionarEmpresaId);
-
-        criarRadioGroupSegmento();
-        cadastrarEmpresa();
-        selecionarEstado(this);
-
     }
 
     private void configurarRetrofit() {
@@ -193,9 +193,9 @@ public class CadastrarActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Empresa> call, Response<Empresa> response) {
                             if (!response.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                                 return;
                             }
-                            Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                             finish();
                         }
 

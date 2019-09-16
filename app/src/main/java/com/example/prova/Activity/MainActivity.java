@@ -1,6 +1,7 @@
 package com.example.prova.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,17 +33,18 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter empresaAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private FloatingActionButton fab;
+    private Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar myToolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(myToolbar);
+
         //Instanciando o retrofit para a comunicação com a API
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://prova.cnt.org.br/XD01/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        retrofit = new Retrofit.Builder().baseUrl("https://prova.cnt.org.br/XD01/").addConverterFactory(GsonConverterFactory.create()).build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
         recyclerView = findViewById(R.id.recyclerViewEmpresasId);
