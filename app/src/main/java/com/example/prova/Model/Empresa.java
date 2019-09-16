@@ -18,6 +18,10 @@ public class Empresa {
         this.endereco = endereco;
     }
 
+    public Empresa(int idEmpresa) {
+        this.idEmpresa = idEmpresa;
+    }
+
     public int getIdEmpresa() {
         return idEmpresa;
     }

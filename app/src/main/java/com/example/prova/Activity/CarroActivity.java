@@ -1,19 +1,26 @@
 package com.example.prova.Activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prova.Model.Adapter.CarroAdapter;
 import com.example.prova.Model.Carro;
+import com.example.prova.Model.Empresa;
 import com.example.prova.Model.ListCarro;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -43,6 +50,9 @@ public class CarroActivity extends AppCompatActivity {
     private Button buttonCancelarCarro;
 
     private Bundle extras;
+    private int idEmpresa;
+
+    private MaterialAlertDialogBuilder materialAlertDialogBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,7 @@ public class CarroActivity extends AppCompatActivity {
 
         //Carregando informações
         extras = getIntent().getExtras();
+        idEmpresa = extras.getInt("idEmpresa");
 
         //Instanciando o retrofit para a comunicação com a API
         retrofit = new Retrofit.Builder()
@@ -75,13 +86,67 @@ public class CarroActivity extends AppCompatActivity {
         textInputPlaca = findViewById(R.id.textInputPlacaId);
         textInputNumEixos = findViewById(R.id.textInputNumEixosId);
 
+        confirmarExclusao(this);
         cadastrarCarro();
         carregarCarros();
 
     }
 
+    private void confirmarExclusao(CarroActivity carroActivity) {
+        materialAlertDialogBuilder = new MaterialAlertDialogBuilder(carroActivity)
+                .setTitle("Apagar empresa")
+                .setMessage("confirmar exclusão")
+                .setNegativeButton("Não", null)
+                .setPositiveButton("SIM", apagarCarro());
+    }
+
+    private DialogInterface.OnClickListener apagarCarro() {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Empresa empresa = new Empresa(idEmpresa);
+                Call<Empresa> call = retrofitConfig.deleteEmpresa(empresa);
+                call.enqueue(new Callback<Empresa>() {
+                    @Override
+                    public void onResponse(Call<Empresa> call, Response<Empresa> response) {
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Empresa> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Erro ao deletar", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        };
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_menu_carro_activity:
+                materialAlertDialogBuilder.show();
+//                        new AlertDialog.Builder(getApplicationContext());
+//                dialog.setTitle("Apagar o carro");
+//                dialog.setMessage("Deseja apagar permanentemente o carro?");
+//                dialog.setNegativeButton("Nâo", null);
+//                dialog.setPositiveButton("Sim", null);
+//                dialog.create();
+                return (true);
+            case R.id.search_menu_carro_activity:
+                return (true);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void carregarCarros() {
-        Call<ListCarro> listCarroCall = retrofitConfig.listarVeiculos(extras.getInt("idEmpresa"));
+        Call<ListCarro> listCarroCall = retrofitConfig.listarVeiculos(idEmpresa);
         listCarroCall.enqueue(new Callback<ListCarro>() {
             @Override
             public void onResponse(Call<ListCarro> call, Response<ListCarro> response) {
@@ -114,12 +179,10 @@ public class CarroActivity extends AppCompatActivity {
                 String placa = textInputPlaca.getText().toString();
                 String numerosEixos = textInputNumEixos.getText().toString();
 
-                Integer idEmpresa = extras.getInt("idEmpresa");
-
                 boolean numEixosIsValido = validarCampo(textInputLayoutNumEixos, numerosEixos, "Número de eixos");
                 boolean placaIsValido = validarCampo(textInputLayoutPlaca, placa, "Placa");
 
-                if (numEixosIsValido || placaIsValido) {
+                if (numEixosIsValido && placaIsValido) {
                     Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), idEmpresa);
                     Call<Carro> carroCall = retrofitConfig.cadastrarCarro(carro);
                     carroCall.enqueue(new Callback<Carro>() {
