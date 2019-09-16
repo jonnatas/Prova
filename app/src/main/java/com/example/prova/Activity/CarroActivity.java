@@ -128,18 +128,9 @@ public class CarroActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.delete_menu_carro_activity:
-                materialAlertDialogBuilder.show();
-//                        new AlertDialog.Builder(getApplicationContext());
-//                dialog.setTitle("Apagar o carro");
-//                dialog.setMessage("Deseja apagar permanentemente o carro?");
-//                dialog.setNegativeButton("Nâo", null);
-//                dialog.setPositiveButton("Sim", null);
-//                dialog.create();
-                return (true);
-            case R.id.search_menu_carro_activity:
-                return (true);
+        if (item.getItemId() == R.id.delete_menu_carro_activity) {
+            materialAlertDialogBuilder.show();
+            return (true);
         }
         return super.onOptionsItemSelected(item);
     }
