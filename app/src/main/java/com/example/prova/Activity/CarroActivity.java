@@ -57,12 +57,14 @@ public class CarroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carro);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
         //Carregando informações
         extras = getIntent().getExtras();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(extras.getString("nome"));
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+
 
 
         //Instanciando o retrofit para a comunicação com a API

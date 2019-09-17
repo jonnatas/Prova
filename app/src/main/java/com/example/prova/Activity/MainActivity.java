@@ -1,22 +1,19 @@
 package com.example.prova.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.prova.Model.Adapter.EmpresaAdapter;
-import com.example.prova.Model.Empresa;
 import com.example.prova.Model.ListEmpresa;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
-import com.example.prova.SwipeToDeleteCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import retrofit2.Call;
@@ -68,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        carregarEmpresas();
+        carregarEmpresas();
     }
 
     private void carregarEmpresas() {
@@ -85,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 empresaAdapter = new EmpresaAdapter(empresas);
                 recyclerViewEmpresas.setAdapter(empresaAdapter);
                 empresaAdapter.setContext(getApplicationContext());
-                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback((EmpresaAdapter) empresaAdapter));
-                itemTouchHelper.attachToRecyclerView(recyclerViewEmpresas);
             }
 
             @Override

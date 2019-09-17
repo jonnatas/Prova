@@ -28,11 +28,37 @@
             android:padding="2dp"
             android:textAppearance="?attr/textAppearanceHeadline6" />
 
-        <TextView
-            android:id="@+id/textViewSegmentoCardId"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:textAppearance="?attr/textAppearanceBody2" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewSegmentoCardId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textViewEstadoId"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewEstadoId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
+                android:padding="2dp"
+                android:text="teste"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/gray"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

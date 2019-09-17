@@ -61,6 +61,7 @@ public class CadastrarActivity extends AppCompatActivity {
         configurarRetrofit();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Nova empresa");
         getSupportActionBar().setHomeButtonEnabled(true);
 
         instanciandoWidgets(this);
