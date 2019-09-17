@@ -1,7 +1,5 @@
 package com.example.prova.Model;
 
-import androidx.annotation.NonNull;
-
 public class Empresa {
     private int idEmpresa;
     private String nome;
@@ -9,6 +7,15 @@ public class Empresa {
     private String cep;
     private String estado;
     private String endereco;
+
+    public Empresa(int idEmpresa, String nome, String segmento, String cep, String estado, String endereco) {
+        this.idEmpresa = idEmpresa;
+        this.nome = nome;
+        this.segmento = segmento;
+        this.cep = cep;
+        this.estado = estado;
+        this.endereco = endereco;
+    }
 
     public Empresa(String nome, String segmento, String cep, String estado, String endereco) {
         this.nome = nome;

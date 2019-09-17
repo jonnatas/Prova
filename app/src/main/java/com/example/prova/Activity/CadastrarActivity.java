@@ -1,7 +1,8 @@
 package com.example.prova.Activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +31,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
+    static final int UPDATE_EMPRESA = 1;  // The request code
 
     private TextInputEditText textInputNome;
 
@@ -50,8 +52,11 @@ public class CadastrarActivity extends AppCompatActivity {
     private RadioGroup radioGroupSegmento;
     private RadioButton radioButtonEscolhido;
 
+    private Integer idEmpresa;
     private String segmentoSelecionado;
     private String siglaUFSelecionada;
+    private List<String> listaDeSiglas;
+    private List<String> listaDeEstados;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,16 +85,46 @@ public class CadastrarActivity extends AppCompatActivity {
 
         textInputNome = findViewById(R.id.textInputNameId);
         textInputEndereco = findViewById(R.id.textInputEnderecoId);
-
         textInputCEP = findViewById(R.id.textInputCepId);
+        filledExposedDropdownEstado = findViewById(R.id.filled_exposed_dropdown);
+
+        radioGroupSegmento = findViewById(R.id.radioGroupSegmento);
 
         textInputCEP.addTextChangedListener(new MaskWatcher("##.###-##"));
 
-        filledExposedDropdownEstado = findViewById(R.id.filled_exposed_dropdown);
-        radioGroupSegmento = findViewById(R.id.radioGroupSegmento);
 
         buttonCadastrar = findViewById(R.id.buttonAdicionarEmpresaId);
         buttonCancelar = findViewById(R.id.buttonCancelarAdicionarEmpresaId);
+
+        listaDeSiglas = Arrays.asList(getResources().getStringArray(R.array.listaDeSiglas));
+        listaDeEstados = Arrays.asList(getResources().getStringArray(R.array.listaDeEstados));
+
+        //Editar empresa
+        editarEmpresa();
+    }
+
+    private void editarEmpresa() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if (extras.containsKey("idEmpresa")) {
+                idEmpresa = extras.getInt("idEmpresa");
+                textInputNome.setText(extras.getString("nome"));
+                textInputEndereco.setText(extras.getString("endereco"));
+                textInputCEP.setText(extras.getString("cep"));
+
+                int indiceEstado = listaDeSiglas.indexOf(extras.getString("estado"));
+                siglaUFSelecionada = listaDeSiglas.get(indiceEstado);
+                String estadoSelecionado = listaDeEstados.get(indiceEstado);
+                filledExposedDropdownEstado.setText(estadoSelecionado);
+
+                String segmento = extras.getString("segmento");
+                if (segmento.equals(getResources().getString(R.string.carga))) {
+                    radioGroupSegmento.check(R.id.radioButtonCarga);
+                } else if (segmento.equals(getResources().getString(R.string.rodoviario))) {
+                    radioGroupSegmento.check(R.id.radioButtonRodoviario);
+                }
+            }
+        }
     }
 
     private void configurarRetrofit() {
@@ -99,8 +134,7 @@ public class CadastrarActivity extends AppCompatActivity {
     }
 
     private void selecionarEstado(CadastrarActivity cadastrarActivity) {
-        final List<String> listaDeSiglas = Arrays.asList(getResources().getStringArray(R.array.listaDeSiglas));
-        final List<String> listaDeEstados = Arrays.asList(getResources().getStringArray(R.array.listaDeEstados));
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(cadastrarActivity, R.layout.dropdown_menu_popup_item, listaDeEstados);
         filledExposedDropdownEstado.setAdapter(adapter);
 
@@ -166,6 +200,9 @@ public class CadastrarActivity extends AppCompatActivity {
         buttonCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Retornar para Activity
+                Intent resultIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, resultIntent);
                 finish();
             }
         });
@@ -182,14 +219,17 @@ public class CadastrarActivity extends AppCompatActivity {
                 boolean cepIsValido = validarCEP(textInputLayoutCep, cepEmpresa, "CEP");
 
                 if (nomeIsValido && estadoIsValido && cepIsValido && enderecoIsValido) {
-                    Empresa empresa = new Empresa(
-                            nomeEmpresa,
-                            segmentoSelecionado,
-                            cepEmpresa,
-                            siglaUFSelecionada,
-                            enderecoEmpresa
-                    );
-                    Call<Empresa> call = retrofitConfig.cadastrarEmpresa(empresa);
+                    //Verificar se tem um id para editar
+                    final Empresa empresa;
+                    Call<Empresa> call;
+                    if (idEmpresa != null) {
+                        empresa = new Empresa(idEmpresa, nomeEmpresa, segmentoSelecionado, cepEmpresa, siglaUFSelecionada, enderecoEmpresa);
+                        call = retrofitConfig.editarEmpresa(empresa);
+                    } else {
+                        empresa = new Empresa(nomeEmpresa, segmentoSelecionado, cepEmpresa, siglaUFSelecionada, enderecoEmpresa);
+                        call = retrofitConfig.cadastrarEmpresa(empresa);
+                    }
+
                     call.enqueue(new Callback<Empresa>() {
                         @Override
                         public void onResponse(Call<Empresa> call, Response<Empresa> response) {
@@ -197,6 +237,16 @@ public class CadastrarActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                                 return;
                             }
+
+                            //Retornar para Activity
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("idEmpresa", empresa.getIdEmpresa());
+                            resultIntent.putExtra("nome", empresa.getNome());
+                            resultIntent.putExtra("segmento", empresa.getSegmento());
+                            resultIntent.putExtra("cep", empresa.getCep());
+                            resultIntent.putExtra("estado", empresa.getCep());
+                            resultIntent.putExtra("endereco", empresa.getEndereco());
+                            setResult(UPDATE_EMPRESA, resultIntent);
                             finish();
                         }
 

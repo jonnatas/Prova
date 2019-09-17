@@ -4,6 +4,11 @@
     tools:context=".CarroActivity">
 
     <item
+        android:id="@+id/edit_menu_carro_activity"
+        android:icon="@drawable/ic_edit_white_24dp"
+        android:title="@string/editar"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/delete_menu_carro_activity"
         android:icon="@drawable/ic_delete_forever_white_24dp"
         android:title="@string/delete"

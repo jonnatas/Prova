@@ -1,6 +1,8 @@
 package com.example.prova.Activity;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CarroActivity extends AppCompatActivity {
+    static final int UPDATE_EMPRESA = 1;  // The request code
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
@@ -60,12 +63,7 @@ public class CarroActivity extends AppCompatActivity {
         //Carregando informações
         extras = getIntent().getExtras();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(extras.getString("nome"));
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-
-
+        populateSupportActionBar();
 
         //Instanciando o retrofit para a comunicação com a API
         retrofit = new Retrofit.Builder().baseUrl("https://prova.cnt.org.br/XD01/").addConverterFactory(GsonConverterFactory.create()).build();
@@ -76,6 +74,12 @@ public class CarroActivity extends AppCompatActivity {
         cadastrarCarro();
         carregarCarros();
 
+    }
+
+    private void populateSupportActionBar() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(extras.getString("nome"));
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     private void instanciandoWidgets(CarroActivity carroActivity) {
@@ -134,11 +138,37 @@ public class CarroActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.delete_menu_carro_activity) {
-            materialAlertDialogBuilder.show();
-            return (true);
+        switch (item.getItemId()) {
+            case R.id.delete_menu_carro_activity:
+                materialAlertDialogBuilder.show();
+                return true;
+            case R.id.edit_menu_carro_activity:
+                Intent intent = new Intent(getApplicationContext(), CadastrarActivity.class);
+
+                intent.putExtra("idEmpresa", extras.getInt("idEmpresa"));
+                intent.putExtra("nome", extras.getString("nome"));
+                intent.putExtra("segmento", extras.getString("segmento"));
+                intent.putExtra("cep", extras.getString("cep"));
+                intent.putExtra("estado", extras.getString("estado"));
+                intent.putExtra("endereco", extras.getString("endereco"));
+
+                startActivityForResult(intent, UPDATE_EMPRESA);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
+        super.onActivityResult(requestCode, resultCode, resultIntent);
+        if (requestCode == UPDATE_EMPRESA) {
+
+            if (resultCode == Activity.RESULT_FIRST_USER) {
+                Toast.makeText(getApplicationContext(), "resultCode:" + resultCode + " requestCode:" + requestCode, Toast.LENGTH_SHORT).show();
+                extras = resultIntent.getExtras();
+                populateSupportActionBar();
+            }
+        }
     }
 
     private void carregarCarros() {
