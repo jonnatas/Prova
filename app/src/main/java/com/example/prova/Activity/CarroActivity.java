@@ -34,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CarroActivity extends AppCompatActivity {
     static final int UPDATE_EMPRESA = 1;  // The request code
+    static final int DELETE_EMPRESA_SUCESS = 20;  // The request code
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
@@ -118,6 +119,10 @@ public class CarroActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Falha ao deletar:" + response.code(), Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("position", extras.getInt("position"));
+                        resultIntent.putExtra("idEmpresa", extras.getInt("idEmpresa"));
+                        setResult(DELETE_EMPRESA_SUCESS, resultIntent);
                         finish();
                     }
 
@@ -197,6 +202,8 @@ public class CarroActivity extends AppCompatActivity {
         buttonCancelarCarro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent resultIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, resultIntent);
                 finish();
             }
         });

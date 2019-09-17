@@ -1,5 +1,6 @@
 package com.example.prova.Model.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -19,13 +20,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaViewHolder> {
+    static final int UPDATE_EMPRESA = 1;  // The request code
+
     private List<Empresa> empresaList;
     private Context context;
+    private Activity activity;
 
-    public EmpresaAdapter(ListEmpresa empresaList) {
+    public EmpresaAdapter(ListEmpresa empresaList, Activity activity) {
         List<Empresa> list = empresaList.getEmpresaList();
         Collections.reverse(list);
         this.empresaList = list;
+        this.activity = activity;
     }
 
     @NonNull
@@ -37,7 +42,7 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EmpresaViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull EmpresaViewHolder holder, final int position) {
         final Empresa empresa = empresaList.get(position);
         holder.textViewSegmento.setText(empresa.getSegmento());
         holder.textViewEstado.setText(empresa.getEstado());
@@ -53,7 +58,8 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
                 intent.putExtra("cep", empresa.getCep());
                 intent.putExtra("estado", empresa.getEstado());
                 intent.putExtra("endereco", empresa.getEndereco());
-                view.getContext().startActivity(intent);
+                intent.putExtra("position", position);
+                activity.startActivityForResult(intent, UPDATE_EMPRESA);
             }
         });
 

@@ -32,6 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
     static final int UPDATE_EMPRESA = 1;  // The request code
+    static final int UPDATE_EMPRESA_SUCESS = 10;  // The request code
 
     private TextInputEditText textInputNome;
 
@@ -244,9 +245,9 @@ public class CadastrarActivity extends AppCompatActivity {
                             resultIntent.putExtra("nome", empresa.getNome());
                             resultIntent.putExtra("segmento", empresa.getSegmento());
                             resultIntent.putExtra("cep", empresa.getCep());
-                            resultIntent.putExtra("estado", empresa.getCep());
+                            resultIntent.putExtra("estado", empresa.getEstado());
                             resultIntent.putExtra("endereco", empresa.getEndereco());
-                            setResult(UPDATE_EMPRESA, resultIntent);
+                            setResult(UPDATE_EMPRESA_SUCESS, resultIntent);
                             finish();
                         }
 
