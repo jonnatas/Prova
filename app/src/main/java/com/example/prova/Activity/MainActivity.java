@@ -12,13 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prova.Model.Adapter.EmpresaAdapter;
-import com.example.prova.Model.Empresa;
 import com.example.prova.Model.ListEmpresa;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     static final int UPDATE_EMPRESA = 1;  // The request code
     static final int UPDATE_EMPRESA_SUCESS = 10;  // The request code
     static final int DELETE_EMPRESA_SUCESS = 20;  // The request code
+    static final int EDITED_EMPRESA_SUCESS = 30;  // The request code
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
@@ -60,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CadastrarActivity.class);
+                intent.putExtra("position", 0);
                 startActivityForResult(intent, UPDATE_EMPRESA);
-
             }
         });
         carregarEmpresas(this);
@@ -72,36 +70,37 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == UPDATE_EMPRESA) {
-            if (resultCode == UPDATE_EMPRESA_SUCESS) {
-                atualizarLista(data.getExtras());
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-//                Toast.makeText(getApplicationContext(), "RESULT_CANCELED:" + resultCode + " requestCode:" + requestCode, Toast.LENGTH_SHORT).show();
-            } else if (resultCode == DELETE_EMPRESA_SUCESS) {
-                removerItemDeletadoDaLista(data.getExtras());
+            switch (resultCode) {
+                case UPDATE_EMPRESA_SUCESS:
+                    addItemNaLista(data.getExtras());
+                    return;
+                case Activity.RESULT_CANCELED:
+//                    Toast.makeText(getApplicationContext(), "RESULT_CANCELED:" + resultCode + " requestCode:" + requestCode, Toast.LENGTH_SHORT).show();
+                    return;
+                case DELETE_EMPRESA_SUCESS:
+                    removerItemDeletadoDaLista(data.getExtras());
+                    return;
+                case EDITED_EMPRESA_SUCESS:
+                    Toast.makeText(getApplicationContext(), "P " + data.getExtras().getInt("position"), Toast.LENGTH_SHORT).show();
+
+                    atualizarItemNaLista(data.getExtras());
+                    return;
             }
         }
     }
 
-    private void removerItemDeletadoDaLista(Bundle extras) {
-        int postition = extras.getInt("position");
-        int idEmpresa = extras.getInt("idEmpresa");
-        List<Empresa> empresasList = empresas.getEmpresaList();
-        empresasList.remove(postition);
-        empresaAdapter.notifyItemRemoved(postition);
+    private void atualizarItemNaLista(Bundle bundle) {
+        empresaAdapter.atualizarItemPosition(bundle);
+
     }
 
-    private void atualizarLista(Bundle extras) {
-        Empresa newEmpresa = new Empresa(
-                extras.getInt("idEmpresa"),
-                extras.getString("nome"),
-                extras.getString("segmento"),
-                extras.getString("cep"),
-                extras.getString("estado"),
-                extras.getString("endereco")
-        );
-        List<Empresa> empresasList = empresas.getEmpresaList();
-        empresasList.add(0, newEmpresa);
-        empresaAdapter.notifyItemInserted(0);
+    private void addItemNaLista(Bundle bundle) {
+        empresaAdapter.adicionarItemPosition(bundle);
+    }
+
+    private void removerItemDeletadoDaLista(Bundle bundle) {
+        int positionItemRemovido = bundle.getInt("positionItemRemovido");
+        empresaAdapter.removeItemPosition(positionItemRemovido);
     }
 
     private void carregarEmpresas(final Activity activity) {

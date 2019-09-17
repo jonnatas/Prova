@@ -34,7 +34,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CarroActivity extends AppCompatActivity {
     static final int UPDATE_EMPRESA = 1;  // The request code
+    static final int UPDATE_EMPRESA_SUCESS = 10;  // The request code
     static final int DELETE_EMPRESA_SUCESS = 20;  // The request code
+    static final int EDITED_EMPRESA_SUCESS = 30;  // The request code
+    static final int EDIT_EMPRESA = 40;  // The request code
 
     private Retrofit retrofit;
     private RetrofitConfig retrofitConfig;
@@ -74,6 +77,14 @@ public class CarroActivity extends AppCompatActivity {
         confirmarExclusao(this);
         cadastrarCarro();
         carregarCarros();
+        buttonCancelarCarro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent resultIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, resultIntent);
+                finish();
+            }
+        });
 
     }
 
@@ -110,7 +121,7 @@ public class CarroActivity extends AppCompatActivity {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Empresa empresa = new Empresa(extras.getInt("idEmpresa"));
+                final Empresa empresa = new Empresa(extras.getInt("idEmpresa"));
                 Call<Empresa> call = retrofitConfig.deleteEmpresa(empresa);
                 call.enqueue(new Callback<Empresa>() {
                     @Override
@@ -120,8 +131,8 @@ public class CarroActivity extends AppCompatActivity {
                             return;
                         }
                         Intent resultIntent = new Intent();
-                        resultIntent.putExtra("position", extras.getInt("position"));
-                        resultIntent.putExtra("idEmpresa", extras.getInt("idEmpresa"));
+                        resultIntent.putExtra("idEmpresaItemRemovido", empresa.getIdEmpresa());
+                        resultIntent.putExtra("positionItemRemovido", extras.getInt("position"));
                         setResult(DELETE_EMPRESA_SUCESS, resultIntent);
                         finish();
                     }
@@ -147,17 +158,11 @@ public class CarroActivity extends AppCompatActivity {
             case R.id.delete_menu_carro_activity:
                 materialAlertDialogBuilder.show();
                 return true;
+
             case R.id.edit_menu_carro_activity:
                 Intent intent = new Intent(getApplicationContext(), CadastrarActivity.class);
-
-                intent.putExtra("idEmpresa", extras.getInt("idEmpresa"));
-                intent.putExtra("nome", extras.getString("nome"));
-                intent.putExtra("segmento", extras.getString("segmento"));
-                intent.putExtra("cep", extras.getString("cep"));
-                intent.putExtra("estado", extras.getString("estado"));
-                intent.putExtra("endereco", extras.getString("endereco"));
-
-                startActivityForResult(intent, UPDATE_EMPRESA);
+                intent.putExtras(extras);
+                startActivityForResult(intent, EDIT_EMPRESA);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -166,12 +171,16 @@ public class CarroActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
         super.onActivityResult(requestCode, resultCode, resultIntent);
-        if (requestCode == UPDATE_EMPRESA) {
+        if (requestCode == EDIT_EMPRESA) {
 
-            if (resultCode == Activity.RESULT_FIRST_USER) {
-                Toast.makeText(getApplicationContext(), "resultCode:" + resultCode + " requestCode:" + requestCode, Toast.LENGTH_SHORT).show();
+            if (resultCode == UPDATE_EMPRESA_SUCESS) {
                 extras = resultIntent.getExtras();
-                populateSupportActionBar();
+                //Retornar para Activity
+                Intent intent = new Intent();
+                intent.putExtras(extras);
+                intent.putExtra("position", extras.getInt("position"));
+                setResult(EDITED_EMPRESA_SUCESS, intent);
+                finish();
             }
         }
     }
@@ -199,14 +208,7 @@ public class CarroActivity extends AppCompatActivity {
     }
 
     private void cadastrarCarro() {
-        buttonCancelarCarro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent resultIntent = new Intent();
-                setResult(Activity.RESULT_CANCELED, resultIntent);
-                finish();
-            }
-        });
+
         buttonCadastrarCarro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,7 +219,8 @@ public class CarroActivity extends AppCompatActivity {
                 boolean placaIsValido = validarCampo(textInputLayoutPlaca, placa, "Placa");
 
                 if (numEixosIsValido && placaIsValido) {
-                    Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), extras.getInt("idEmpresa"));
+                    int idEmpresa = extras.getInt("idEmpresa");
+                    Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), idEmpresa);
                     Call<Carro> carroCall = retrofitConfig.cadastrarCarro(carro);
                     carroCall.enqueue(new Callback<Carro>() {
                         @Override

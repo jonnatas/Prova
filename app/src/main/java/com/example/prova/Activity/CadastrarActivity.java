@@ -33,6 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CadastrarActivity extends AppCompatActivity {
     static final int UPDATE_EMPRESA = 1;  // The request code
     static final int UPDATE_EMPRESA_SUCESS = 10;  // The request code
+    static final int DELETE_EMPRESA_SUCESS = 20;  // The request code
+    static final int EDITED_EMPRESA_SUCESS = 30;  // The request code
 
     private TextInputEditText textInputNome;
 
@@ -58,6 +60,7 @@ public class CadastrarActivity extends AppCompatActivity {
     private String siglaUFSelecionada;
     private List<String> listaDeSiglas;
     private List<String> listaDeEstados;
+    private Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +75,10 @@ public class CadastrarActivity extends AppCompatActivity {
 
         instanciandoWidgets(this);
 
+
         criarRadioGroupSegmento();
         cadastrarEmpresa();
         selecionarEstado(this);
-
     }
 
     private void instanciandoWidgets(CadastrarActivity cadastrarActivity) {
@@ -93,20 +96,29 @@ public class CadastrarActivity extends AppCompatActivity {
 
         textInputCEP.addTextChangedListener(new MaskWatcher("##.###-##"));
 
-
         buttonCadastrar = findViewById(R.id.buttonAdicionarEmpresaId);
         buttonCancelar = findViewById(R.id.buttonCancelarAdicionarEmpresaId);
 
         listaDeSiglas = Arrays.asList(getResources().getStringArray(R.array.listaDeSiglas));
         listaDeEstados = Arrays.asList(getResources().getStringArray(R.array.listaDeEstados));
 
-        //Editar empresa
-        editarEmpresa();
+        buttonCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Retornar para Activity
+                Intent resultIntent = new Intent();
+                setResult(Activity.RESULT_CANCELED, resultIntent);
+                finish();
+            }
+        });
+        preencherFormEditarEmpresa();
     }
 
-    private void editarEmpresa() {
-        Bundle extras = getIntent().getExtras();
+    private void preencherFormEditarEmpresa() {
+        extras = getIntent().getExtras();
         if (extras != null) {
+            Toast.makeText(getApplicationContext(), "position: " + extras.getInt("position"), Toast.LENGTH_SHORT).show();
+
             if (extras.containsKey("idEmpresa")) {
                 idEmpresa = extras.getInt("idEmpresa");
                 textInputNome.setText(extras.getString("nome"));
@@ -198,15 +210,6 @@ public class CadastrarActivity extends AppCompatActivity {
     }
 
     private void cadastrarEmpresa() {
-        buttonCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Retornar para Activity
-                Intent resultIntent = new Intent();
-                setResult(Activity.RESULT_CANCELED, resultIntent);
-                finish();
-            }
-        });
         buttonCadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -247,6 +250,9 @@ public class CadastrarActivity extends AppCompatActivity {
                             resultIntent.putExtra("cep", empresa.getCep());
                             resultIntent.putExtra("estado", empresa.getEstado());
                             resultIntent.putExtra("endereco", empresa.getEndereco());
+                            int position = extras.getInt("position");
+                            resultIntent.putExtra("position", position);
+
                             setResult(UPDATE_EMPRESA_SUCESS, resultIntent);
                             finish();
                         }

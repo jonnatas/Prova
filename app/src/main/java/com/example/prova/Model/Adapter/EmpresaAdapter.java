@@ -3,6 +3,7 @@ package com.example.prova.Model.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(view.getContext(), CarroActivity.class);
                 intent.putExtra("idEmpresa", empresa.getIdEmpresa());
                 intent.putExtra("nome", empresa.getNome());
@@ -77,6 +79,45 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public void removeItemPosition(int positionItemRemovido) {
+        empresaList.remove(positionItemRemovido);
+        notifyItemRemoved(positionItemRemovido);
+        notifyItemRangeChanged(positionItemRemovido, empresaList.size());
+    }
+
+    public void adicionarItemPosition(Bundle bundle) {
+        Empresa newEmpresa = new Empresa(
+                bundle.getInt("idEmpresa"),
+                bundle.getString("nome"),
+                bundle.getString("segmento"),
+                bundle.getString("cep"),
+                bundle.getString("estado"),
+                bundle.getString("endereco")
+        );
+        int position = bundle.getInt("position");
+
+        empresaList.add(0, newEmpresa);
+        notifyItemInserted(0);
+        notifyItemRangeChanged(0, empresaList.size());
+
+    }
+
+    public void atualizarItemPosition(Bundle bundle) {
+        Empresa newEmpresa = new Empresa(
+                bundle.getInt("idEmpresa"),
+                bundle.getString("nome"),
+                bundle.getString("segmento"),
+                bundle.getString("cep"),
+                bundle.getString("estado"),
+                bundle.getString("endereco")
+        );
+        int position = bundle.getInt("position");
+        empresaList.remove(position);
+        notifyItemRangeChanged(position, empresaList.size());
+        empresaList.add(position, newEmpresa);
+        notifyItemRangeChanged(position, empresaList.size());
     }
 
     public class EmpresaViewHolder extends RecyclerView.ViewHolder {
