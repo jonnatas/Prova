@@ -73,10 +73,14 @@ public class CarroActivity extends AppCompatActivity {
         retrofit = new Retrofit.Builder().baseUrl("https://prova.cnt.org.br/XD01/").addConverterFactory(GsonConverterFactory.create()).build();
         retrofitConfig = retrofit.create(RetrofitConfig.class);
 
-        instanciandoWidgets(this);
+
+        instanciandoWidgets();
+
+        //Inicializando os componentes da aplização
         confirmarExclusao(this);
         cadastrarCarro();
         carregarCarros();
+
         buttonCancelarCarro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,13 +92,14 @@ public class CarroActivity extends AppCompatActivity {
 
     }
 
+    // Inseirndo nome na ActionBar
     private void populateSupportActionBar() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(extras.getString("nome"));
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
-    private void instanciandoWidgets(CarroActivity carroActivity) {
+    private void instanciandoWidgets() {
         recyclerView = findViewById(R.id.recyclerViewCarroId);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -109,20 +114,24 @@ public class CarroActivity extends AppCompatActivity {
         textInputNumEixos = findViewById(R.id.textInputNumEixosId);
     }
 
+    // Instanciando Alerta para confirmar a exclusão
     private void confirmarExclusao(CarroActivity carroActivity) {
         materialAlertDialogBuilder = new MaterialAlertDialogBuilder(carroActivity)
                 .setTitle("Apagar empresa")
                 .setMessage("confirmar exclusão")
                 .setNegativeButton("Não", null)
-                .setPositiveButton("SIM", apagarCarro());
+                .setPositiveButton("SIM", apagarEmpresa());
     }
 
-    private DialogInterface.OnClickListener apagarCarro() {
+    //Excluir a empresa
+    private DialogInterface.OnClickListener apagarEmpresa() {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
                 final Empresa empresa = new Empresa(extras.getInt("idEmpresa"));
                 Call<Empresa> call = retrofitConfig.deleteEmpresa(empresa);
+
                 call.enqueue(new Callback<Empresa>() {
                     @Override
                     public void onResponse(Call<Empresa> call, Response<Empresa> response) {
@@ -130,8 +139,9 @@ public class CarroActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Falha ao deletar:" + response.code(), Toast.LENGTH_SHORT).show();
                             return;
                         }
+
+                        //Inerindo a Flag de deletar empresa com a posição do item para atualizar na lista de empresas.
                         Intent resultIntent = new Intent();
-                        resultIntent.putExtra("idEmpresaItemRemovido", empresa.getIdEmpresa());
                         resultIntent.putExtra("positionItemRemovido", extras.getInt("position"));
                         setResult(DELETE_EMPRESA_SUCESS, resultIntent);
                         finish();
@@ -146,6 +156,7 @@ public class CarroActivity extends AppCompatActivity {
         };
     }
 
+    //Instanciando o menu da Toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -168,6 +179,14 @@ public class CarroActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Recebendo e tratando a edição das informações da empresa na classe CadastroActivity.
+     * e devolvendo a flag de Edição com a posição editada para atualizar na lista na MainActivity
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param resultIntent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
         super.onActivityResult(requestCode, resultCode, resultIntent);
@@ -207,6 +226,10 @@ public class CarroActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * Cadastrar um novo veiculo.
+     */
     private void cadastrarCarro() {
 
         buttonCadastrarCarro.setOnClickListener(new View.OnClickListener() {
@@ -215,8 +238,8 @@ public class CarroActivity extends AppCompatActivity {
                 String placa = textInputPlaca.getText().toString();
                 String numerosEixos = textInputNumEixos.getText().toString();
 
-                boolean numEixosIsValido = validarCampo(textInputLayoutNumEixos, numerosEixos, "Número de eixos");
-                boolean placaIsValido = validarCampo(textInputLayoutPlaca, placa, "Placa");
+                boolean numEixosIsValido = validarNumEixos(numerosEixos);
+                boolean placaIsValido = validarPlaca(placa);
 
                 if (numEixosIsValido && placaIsValido) {
                     int idEmpresa = extras.getInt("idEmpresa");
@@ -229,8 +252,7 @@ public class CarroActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
                                 return;
                             }
-                            Carro dataResponse = response.body();
-                            Toast.makeText(getApplicationContext(), "PLACA: " + response.code(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Veiculo cadastrado com sucesso.", Toast.LENGTH_LONG).show();
                             carregarCarros();
                         }
 
@@ -244,18 +266,53 @@ public class CarroActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validarCampo(TextInputLayout textInputLayout, String nomeEmpresa, String nome) {
+    /***
+     * Validação da placa considerando que uma placa tem 7 digitos.
+     * @param placa
+     * @return
+     */
+    private boolean validarPlaca(String placa) {
+
         try {
-            if (nomeEmpresa.isEmpty()) {
-                textInputLayout.setError(nome + " inválido");
+            if (placa.isEmpty()) {
+                textInputLayoutPlaca.setError("Número de eixos inválido!");
                 return false;
             } else {
-                textInputLayout.setError("");
+                if (placa.length() != 7) {
+                    textInputLayoutPlaca.setError("Número de eixos inválido!");
+                    return false;
+                }
+                textInputLayoutPlaca.setError("");
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            textInputLayout.setError(nome + " inválido");
+            textInputLayoutPlaca.setError("Número de eixos inválido!");
+            return false;
+        }
+    }
+
+    /***
+     * Validação do numero de eixos, sempre maior que 0.
+     * @param numerosEixos
+     * @return
+     */
+    private boolean validarNumEixos(String numerosEixos) {
+        try {
+            if (numerosEixos.isEmpty()) {
+                textInputLayoutNumEixos.setError("Número de eixos inválido!");
+                return false;
+            } else {
+                if (numerosEixos.equals("0")) {
+                    textInputLayoutNumEixos.setError("Número de eixos inválido!");
+                    return false;
+                }
+                textInputLayoutNumEixos.setError("");
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            textInputLayoutNumEixos.setError("Número de eixos inválido!");
             return false;
         }
     }

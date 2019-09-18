@@ -31,6 +31,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CadastrarActivity extends AppCompatActivity {
+
+    //Flags para comunicação entre as Activitys.
     static final int UPDATE_EMPRESA = 1;  // The request code
     static final int UPDATE_EMPRESA_SUCESS = 10;  // The request code
     static final int DELETE_EMPRESA_SUCESS = 20;  // The request code
@@ -75,7 +77,6 @@ public class CadastrarActivity extends AppCompatActivity {
 
         instanciandoWidgets(this);
 
-
         criarRadioGroupSegmento();
         cadastrarEmpresa();
         selecionarEstado(this);
@@ -94,6 +95,7 @@ public class CadastrarActivity extends AppCompatActivity {
 
         radioGroupSegmento = findViewById(R.id.radioGroupSegmento);
 
+        //Adicionando uma mascara para o CEP.
         textInputCEP.addTextChangedListener(new MaskWatcher("##.###-##"));
 
         buttonCadastrar = findViewById(R.id.buttonAdicionarEmpresaId);
@@ -114,29 +116,47 @@ public class CadastrarActivity extends AppCompatActivity {
         preencherFormEditarEmpresa();
     }
 
+    /***
+     * Caso exista informações, os Widgets são preenchidos, verifica-se se o item que será cadastrado
+     * já posui um idEmpresa, se sim deve-se apenas edita-lo.
+     */
     private void preencherFormEditarEmpresa() {
         extras = getIntent().getExtras();
         if (extras != null) {
-//            Toast.makeText(getApplicationContext(), "position: " + extras.getInt("position"), Toast.LENGTH_SHORT).show();
-
             if (extras.containsKey("idEmpresa")) {
                 idEmpresa = extras.getInt("idEmpresa");
                 textInputNome.setText(extras.getString("nome"));
                 textInputEndereco.setText(extras.getString("endereco"));
                 textInputCEP.setText(extras.getString("cep"));
 
-                int indiceEstado = listaDeSiglas.indexOf(extras.getString("estado"));
-                siglaUFSelecionada = listaDeSiglas.get(indiceEstado);
-                String estadoSelecionado = listaDeEstados.get(indiceEstado);
-                filledExposedDropdownEstado.setText(estadoSelecionado);
+                definirSiglaDeEstado(extras);
+                definirRadioGroupSegmento(extras);
 
-                String segmento = extras.getString("segmento");
-                if (segmento.equals(getResources().getString(R.string.carga))) {
-                    radioGroupSegmento.check(R.id.radioButtonCarga);
-                } else if (segmento.equals(getResources().getString(R.string.rodoviario))) {
-                    radioGroupSegmento.check(R.id.radioButtonRodoviario);
-                }
             }
+        }
+    }
+
+    /***
+     * Trabalha com o indice salvo na chave estado, para definir a lista de siglas e a lista de estados
+     * @param extras
+     */
+    private void definirSiglaDeEstado(Bundle extras) {
+        int indiceEstado = listaDeSiglas.indexOf(extras.getString("estado"));
+        siglaUFSelecionada = listaDeSiglas.get(indiceEstado);
+        String estadoSelecionado = listaDeEstados.get(indiceEstado);
+        filledExposedDropdownEstado.setText(estadoSelecionado);
+    }
+
+    /***
+     * Verifica o texto do segmento salvo na empresa e utiliza-o para escolher um radioButton na tela
+     * @param extras
+     */
+    private void definirRadioGroupSegmento(Bundle extras) {
+        String segmento = extras.getString("segmento");
+        if (segmento.equals(getResources().getString(R.string.carga))) {
+            radioGroupSegmento.check(R.id.radioButtonCarga);
+        } else if (segmento.equals(getResources().getString(R.string.rodoviario))) {
+            radioGroupSegmento.check(R.id.radioButtonRodoviario);
         }
     }
 
@@ -247,6 +267,7 @@ public class CadastrarActivity extends AppCompatActivity {
                             //Retornar para Activity
                             Intent resultIntent = new Intent();
 
+                            // Em caso de cadastro pegar os itens da Response
                             if (idEmpresa != null) {
                                 resultIntent.putExtra("idEmpresa", empresa.getIdEmpresa());
                                 resultIntent.putExtra("nome", empresa.getNome());

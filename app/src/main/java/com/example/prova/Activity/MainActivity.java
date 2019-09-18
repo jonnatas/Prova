@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     removerItemDeletadoDaLista(data.getExtras());
                     return;
                 case EDITED_EMPRESA_SUCESS:
-                    Toast.makeText(getApplicationContext(), "P " + data.getExtras().getInt("position"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Empresa editada com sucesso.", Toast.LENGTH_SHORT).show();
 
                     atualizarItemNaLista(data.getExtras());
                     return;
