@@ -87,7 +87,7 @@ public class CarroAdapter extends RecyclerView.Adapter<CarroAdapter.CarroViewHol
                     Toast.makeText(CarroAdapter.this.activity.getApplicationContext(), "Falha ao deletar:" + response.code(), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(CarroAdapter.this.activity.getApplicationContext(), "Empresa deletada comsucesso!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CarroAdapter.this.activity.getApplicationContext(), "Veiculo deletado comsucesso!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
