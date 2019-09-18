@@ -18,7 +18,6 @@ import com.example.prova.Model.Empresa;
 import com.example.prova.Model.ListEmpresa;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
 import java.util.List;
@@ -96,23 +95,6 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
         empresaList.remove(positionItemRemovido);
         notifyItemRemoved(positionItemRemovido);
         notifyItemRangeChanged(positionItemRemovido, empresaList.size());
-//        showUndoSnackbar();
-    }
-
-    private void showUndoSnackbar() {
-        View view = activity.findViewById(R.id.coordinator_layout_main);
-        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_text,
-                Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                empresaList.add(mRecentlyDeletedItemPosition,
-                        mRecentlyDeletedItem);
-                notifyItemInserted(mRecentlyDeletedItemPosition);
-                notifyItemRangeChanged(mRecentlyDeletedItemPosition, empresaList.size());
-            }
-        });
-        snackbar.show();
     }
 
     public void adicionarItemPosition(Bundle bundle) {
@@ -129,7 +111,6 @@ public class EmpresaAdapter extends RecyclerView.Adapter<EmpresaAdapter.EmpresaV
         empresaList.add(0, newEmpresa);
         notifyItemInserted(0);
         notifyItemRangeChanged(0, empresaList.size());
-
     }
 
     public void undoDelete() {

@@ -51,6 +51,6 @@ public interface RetrofitConfig {
 
     //Método para deletar um veiculo
     @POST("veiculo/delete")
-    Call<Carro> deleteCarro(@Body String idVeiculo);
+    Call<Carro> deleteCarro(@Body Carro carro);
 
 }

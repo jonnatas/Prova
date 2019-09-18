@@ -1,6 +1,6 @@
 package com.example.prova.Model;
 
-import android.content.Intent;
+import com.google.gson.annotations.SerializedName;
 
 public class Carro {
     private String placa;
@@ -8,10 +8,39 @@ public class Carro {
     private Integer idVeiculo;
     private Integer idEmpresa;
 
+    @SerializedName("data")
+    private Carro carro;
+
+    private Boolean success;
+
     public Carro(String placa, Integer numeroEixos, Integer idEmpresa) {
         this.placa = placa;
         this.numeroEixos = numeroEixos;
         this.idEmpresa = idEmpresa;
+    }
+
+    public Carro(Boolean success) {
+        this.success = success;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public Carro(Carro carro) {
+        this.carro = carro;
+    }
+
+    public Carro getCarro() {
+        return carro;
+    }
+
+    public void setCarro(Carro carro) {
+        this.carro = carro;
     }
 
     public String getPlaca() {

@@ -1,6 +1,5 @@
 package com.example.prova.Helper;
 
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
@@ -14,22 +13,23 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.prova.Model.Adapter.EmpresaAdapter;
+import com.example.prova.Model.Adapter.CarroAdapter;
 import com.example.prova.R;
 import com.example.prova.RetrofitConfig;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+public class SwipeDeleteCarro extends ItemTouchHelper.SimpleCallback {
 
     private final RetrofitConfig retrofitConfig;
     private final Activity activity;
-    private EmpresaAdapter empresaAdapter;
+    private CarroAdapter carroAdapter;
     private Drawable icon;
     private final ColorDrawable background;
 
-    public SwipeToDeleteCallback(EmpresaAdapter empresaAdapter, RetrofitConfig retrofitConfig, Activity activity) {
+
+    public SwipeDeleteCarro(CarroAdapter carroAdapter, RetrofitConfig retrofitConfig, Activity activity) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        this.empresaAdapter = empresaAdapter;
+        this.carroAdapter = carroAdapter;
         icon = ContextCompat.getDrawable(activity, R.drawable.ic_delete_forever_white_24dp);
         background = new ColorDrawable(Color.RED);
         this.retrofitConfig = retrofitConfig;
@@ -76,28 +76,18 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
-        empresaAdapter.removeItemPosition(position);
+        carroAdapter.removeItemPosition(position);
         confirmarExclusao(position);
-    }
-
-    //Excluir a empresa
-    private DialogInterface.OnClickListener apagarEmpresa(final int position) {
-        return new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                empresaAdapter.removeItemRetrofit(position, retrofitConfig);
-            }
-        };
     }
 
     // Instanciando Alerta para confirmar a exclusão
     private void confirmarExclusao(int position) {
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(activity)
-                .setTitle("Apagar empresa permanentemente?")
+                .setTitle("Apagar veiculo permanentemente?")
                 .setMessage("confirmar exclusão")
                 .setCancelable(false)
                 .setNegativeButton("Não", undoDelete(position))
-                .setPositiveButton("SIM", apagarEmpresa(position));
+                .setPositiveButton("SIM", apagarCarro(position));
         materialAlertDialogBuilder.show();
     }
 
@@ -105,7 +95,17 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                empresaAdapter.undoDelete();
+                carroAdapter.undoDelete();
+            }
+        };
+    }
+
+    //Excluir a empresa
+    private DialogInterface.OnClickListener apagarCarro(final int position) {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                carroAdapter.removeItemRetrofit(position, retrofitConfig);
             }
         };
     }

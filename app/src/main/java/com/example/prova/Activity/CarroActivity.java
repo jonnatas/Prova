@@ -13,9 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.prova.Helper.SwipeDeleteCarro;
 import com.example.prova.Model.Adapter.CarroAdapter;
 import com.example.prova.Model.Carro;
 import com.example.prova.Model.Empresa;
@@ -44,7 +46,7 @@ public class CarroActivity extends AppCompatActivity {
 
     private ListCarro carros;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter carroAdapter;
+    private CarroAdapter carroAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
     private TextInputLayout textInputLayoutPlaca;
@@ -57,6 +59,7 @@ public class CarroActivity extends AppCompatActivity {
     private Button buttonCancelarCarro;
 
     private Bundle extras;
+    private Activity activity;
 
     private MaterialAlertDialogBuilder materialAlertDialogBuilder;
 
@@ -66,6 +69,7 @@ public class CarroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_carro);
         //Carregando informações
         extras = getIntent().getExtras();
+        activity = this;
 
         populateSupportActionBar();
 
@@ -78,8 +82,8 @@ public class CarroActivity extends AppCompatActivity {
 
         //Inicializando os componentes da aplização
         confirmarExclusao(this);
-        cadastrarCarro();
-        carregarCarros();
+        cadastrarCarro(this);
+        carregarCarros(this);
 
         buttonCancelarCarro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,7 +208,7 @@ public class CarroActivity extends AppCompatActivity {
         }
     }
 
-    private void carregarCarros() {
+    private void carregarCarros(final Activity activity) {
         int idEmpresa = extras.getInt("idEmpresa");
         Call<ListCarro> listCarroCall = retrofitConfig.listarVeiculos(idEmpresa);
         listCarroCall.enqueue(new Callback<ListCarro>() {
@@ -215,8 +219,10 @@ public class CarroActivity extends AppCompatActivity {
                     return;
                 }
                 carros = response.body();
-                carroAdapter = new CarroAdapter(carros);
+                carroAdapter = new CarroAdapter(carros, activity);
                 recyclerView.setAdapter(carroAdapter);
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeDeleteCarro(carroAdapter, retrofitConfig, activity));
+                itemTouchHelper.attachToRecyclerView(recyclerView);
             }
 
             @Override
@@ -230,7 +236,7 @@ public class CarroActivity extends AppCompatActivity {
     /**
      * Cadastrar um novo veiculo.
      */
-    private void cadastrarCarro() {
+    private void cadastrarCarro(final Activity activity) {
 
         buttonCadastrarCarro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,24 +249,34 @@ public class CarroActivity extends AppCompatActivity {
 
                 if (numEixosIsValido && placaIsValido) {
                     int idEmpresa = extras.getInt("idEmpresa");
-                    Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), idEmpresa);
+                    final Carro carro = new Carro(placa, Integer.valueOf(numerosEixos), idEmpresa);
                     Call<Carro> carroCall = retrofitConfig.cadastrarCarro(carro);
-                    carroCall.enqueue(new Callback<Carro>() {
-                        @Override
-                        public void onResponse(Call<Carro> call, Response<Carro> response) {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
-                                return;
+                    try {
+                        carroCall.enqueue(new Callback<Carro>() {
+                            @Override
+                            public void onResponse(Call<Carro> call, Response<Carro> response) {
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Falha:" + response.code(), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                Carro responseCarro = response.body();
+                                if (responseCarro.getSuccess()) {
+                                    Toast.makeText(getApplicationContext(), "Veiculo cadastrado com sucesso.", Toast.LENGTH_LONG).show();
+                                    carroAdapter.adicionarItemPosition(responseCarro.getCarro(), 0);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error, o veiculo já existe! ", Toast.LENGTH_LONG).show();
+                                }
                             }
-                            Toast.makeText(getApplicationContext(), "Veiculo cadastrado com sucesso.", Toast.LENGTH_LONG).show();
-                            carregarCarros();
-                        }
 
-                        @Override
-                        public void onFailure(Call<Carro> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Error" + t.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<Carro> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Error" + t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), "Error ao cadastrar o veiculo", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
                 }
             }
         });
