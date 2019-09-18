@@ -8,9 +8,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.prova.Helper.SwipeToDeleteCallback;
 import com.example.prova.Model.Adapter.EmpresaAdapter;
 import com.example.prova.Model.ListEmpresa;
 import com.example.prova.R;
@@ -117,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                 empresaAdapter = new EmpresaAdapter(empresas, activity);
                 recyclerViewEmpresas.setAdapter(empresaAdapter);
                 empresaAdapter.setContext(getApplicationContext());
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(empresaAdapter, retrofitConfig, activity));
+                itemTouchHelper.attachToRecyclerView(recyclerViewEmpresas);
+
             }
 
             @Override
