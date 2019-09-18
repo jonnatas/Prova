@@ -1,5 +1,7 @@
 package com.example.prova.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Empresa {
     private int idEmpresa;
     private String nome;
@@ -7,6 +9,21 @@ public class Empresa {
     private String cep;
     private String estado;
     private String endereco;
+
+    @SerializedName("data")
+    private Empresa data;
+
+    public Empresa(Empresa data) {
+        this.data = data;
+    }
+
+    public Empresa getData() {
+        return data;
+    }
+
+    public void setData(Empresa data) {
+        this.data = data;
+    }
 
     public Empresa(int idEmpresa, String nome, String segmento, String cep, String estado, String endereco) {
         this.idEmpresa = idEmpresa;

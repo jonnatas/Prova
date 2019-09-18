@@ -117,7 +117,7 @@ public class CadastrarActivity extends AppCompatActivity {
     private void preencherFormEditarEmpresa() {
         extras = getIntent().getExtras();
         if (extras != null) {
-            Toast.makeText(getApplicationContext(), "position: " + extras.getInt("position"), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "position: " + extras.getInt("position"), Toast.LENGTH_SHORT).show();
 
             if (extras.containsKey("idEmpresa")) {
                 idEmpresa = extras.getInt("idEmpresa");
@@ -242,14 +242,27 @@ public class CadastrarActivity extends AppCompatActivity {
                                 return;
                             }
 
+                            Empresa responseEmpresa = response.body();
+
                             //Retornar para Activity
                             Intent resultIntent = new Intent();
-                            resultIntent.putExtra("idEmpresa", empresa.getIdEmpresa());
-                            resultIntent.putExtra("nome", empresa.getNome());
-                            resultIntent.putExtra("segmento", empresa.getSegmento());
-                            resultIntent.putExtra("cep", empresa.getCep());
-                            resultIntent.putExtra("estado", empresa.getEstado());
-                            resultIntent.putExtra("endereco", empresa.getEndereco());
+
+                            if (idEmpresa != null) {
+                                resultIntent.putExtra("idEmpresa", empresa.getIdEmpresa());
+                                resultIntent.putExtra("nome", empresa.getNome());
+                                resultIntent.putExtra("segmento", empresa.getSegmento());
+                                resultIntent.putExtra("cep", empresa.getCep());
+                                resultIntent.putExtra("estado", empresa.getEstado());
+                                resultIntent.putExtra("endereco", empresa.getEndereco());
+                            } else {
+                                resultIntent.putExtra("idEmpresa", responseEmpresa.getData().getIdEmpresa());
+                                resultIntent.putExtra("nome", responseEmpresa.getData().getNome());
+                                resultIntent.putExtra("segmento", responseEmpresa.getData().getSegmento());
+                                resultIntent.putExtra("cep", responseEmpresa.getData().getCep());
+                                resultIntent.putExtra("estado", responseEmpresa.getData().getEstado());
+                                resultIntent.putExtra("endereco", responseEmpresa.getData().getEndereco());
+                            }
+
                             int position = extras.getInt("position");
                             resultIntent.putExtra("position", position);
 
